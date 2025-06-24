@@ -84,11 +84,8 @@ Then open your browser at `http://127.0.0.1:5000/`
 
 ---
 
-## 📸 Screenshots
 
-> _You can upload UI screenshots here once deployed to show functionality._
 
----
 
 ## 🧩 Folder Structure
 
@@ -107,21 +104,12 @@ NewsSenseAI/
 
 ---
 
-## 📌 Future Enhancements
 
-- [ ] Deploy to Hugging Face or Render
-- [ ] Add bias detection module
-- [ ] Enable map visualization for GPE entities (Google Maps)
-- [ ] Compare sentiment across multiple URLs visually
-- [ ] Add charts and NER highlighting in article text
-
----
 
 ## 👨‍💻 Author
 
 **Devang Nadkarni**  
-B.Tech. Artificial Intelligence & Data Science (SPPU)  
-📬 [LinkedIn](https://www.linkedin.com/in/devang404)  
+B.E. Artificial Intelligence & Data Science (SPPU)   
 📁 [GitHub](https://github.com/devang404)
 
 ---
