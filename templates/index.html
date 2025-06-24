@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regional News Summarizer</title>
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+ <style>
+  body {
+    padding-top: 40px;
+    background: #f0f2f5;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .container {
+    max-width: 800px;
+  }
+
+  .result-box {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow-wrap: break-word;
+  }
+
+  h4 {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+
+  .long-text {
+    max-height: 400px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+  }
+</style>
+
+</head>
+<body>
+  <div class="container">
+    <h1 class="mb-4 text-center">Regional Language News Summarizer</h1>
+
+    <form method="POST" action="/" class="mb-4">
+      <div class="mb-3">
+        <label for="urlInput" class="form-label">Enter News Article URL:</label>
+        <input
+          type="url"
+          id="urlInput"
+          name="url"
+          class="form-control"
+          placeholder="https://example.com/news-article"
+          required
+          value="{{ request.form.get('url', '') }}"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Summarize & Analyze</button>
+    </form>
+
+    {% if article %}
+<div class="result-box">
+  <div class="section-title">📰 Original Article Text</div>
+  <div class="long-text">{{ article}}</div>
+</div>
+{% endif %}
+
+{% if summary %}
+<div class="result-box">
+  <div class="section-title">📌 Summary</div>
+  <p>{{ summary }}</p>
+</div>
+{% endif %}
+
+{% if sentiment %}
+<div class="result-box">
+  <div class="section-title">😊 Sentiment</div>
+  <p>{{ sentiment }}</p>
+</div>
+{% endif %}
+
+{% if lang %}
+<div class="result-box">
+  <div class="section-title">🌐 Detected Language</div>
+  <p>{{ lang }}</p>
+</div>
+{% endif %}
+
+  {% if summary or article or sentiment or lang %}
+<div class="text-center mt-4">
+  <button class="btn btn-outline-success" onclick="generatePDF()">📄 Download as PDF</button>
+</div>
+{% endif %}
+ {% if entities %}
+<div class="result-box">
+  <h4>🔍 Named Entities Extracted:</h4>
+
+  {% if entities.PERSON %}
+  <p><strong>👤 People:</strong>
+    {% for person in entities.PERSON %}
+      <span class="badge bg-primary me-1">{{ person }}</span>
+    {% endfor %}
+  </p>
+  {% endif %}
+
+  {% if entities.ORG %}
+  <p><strong>🏢 Organizations:</strong>
+    {% for org in entities.ORG %}
+      <span class="badge bg-success me-1">{{ org }}</span>
+    {% endfor %}
+  </p>
+  {% endif %}
+
+  {% if entities.GPE %}
+  <p><strong>🌍 Locations:</strong>
+    {% for place in entities.GPE %}
+      <span class="badge bg-info text-dark me-1">{{ place }}</span>
+    {% endfor %}
+  </p>
+  {% endif %}
+
+  {% if entities.DATE %}
+  <p><strong>📅 Dates:</strong>
+    {% for date in entities.DATE %}
+      <span class="badge bg-warning text-dark me-1">{{ date }}</span>
+    {% endfor %}
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+
+<script>
+  async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // 🔑 1. Register the base64 font that you downloaded earlier
+    doc.addFileToVFS("NotoSans-Regular.ttf", NotoSansRegular);  // from the .js file
+    doc.addFont("NotoSans-Regular.ttf", "NotoSans", "normal");
+
+    // 🔑 2. Set it as the active font
+    doc.setFont("NotoSans");
+
+    let y = 10;
+
+    function addSection(title, text) {
+      doc.setFontSize(14);
+      doc.text(title, 10, y);
+      y += 7;
+
+      doc.setFontSize(11);
+      const lines = doc.splitTextToSize(text, 180);
+      doc.text(lines, 10, y);
+      y += lines.length * 6 + 5;
+    }
+
+    // Replace these template values if you're using Flask or a dynamic page
+    addSection("Original Article", `{{ article | replace('\n', ' ') if article else 'N/A' }}`);
+    addSection("Summary", `{{ summary if summary else 'N/A' }}`);
+    addSection("Sentiment", `{{ sentiment if sentiment else 'N/A' }}`);
+    addSection("Detected Language", `{{ lang if lang else 'N/A' }}`);
+
+    // Save the PDF file
+    doc.save("news_summary.pdf");
+  }
+</script>
+
+
+  <!-- Bootstrap JS Bundle (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="/static/fonts/NotoSans-Regular.js"></script>
+
+</body>
+</html>
