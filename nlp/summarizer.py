@@ -1,12 +1,12 @@
 from transformers import pipeline
 from nlp.translator import translate_to_english
 
-_summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+_summarizer = None
 
 def get_summarizer():
     global _summarizer
     if _summarizer is None:
-        _summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+        _summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", device_map="auto", offload_folder="offload")
     return _summarizer
 
 def generate_summary(text, lang):
